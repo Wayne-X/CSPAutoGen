@@ -21,3 +21,6 @@ git add -A
 git commit -m ""
 git push
 
+
+-- SHUTDOWN
+sudo service mongodb stop

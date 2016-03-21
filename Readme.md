@@ -1,0 +1,1 @@
+CSPAutoGen: on-the-fly CSP generator with flexible deployment. Work done at Northwestern University under Professor Yan Chen with wmcalyj and wayne-x. Adds better scraping and js based template tools, relative to previous repo.

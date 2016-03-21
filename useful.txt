@@ -1,0 +1,9 @@
+sudo service mongodb stop
+sudo mongod
+
+mongo
+use test
+db.myCollection.insert()
+db.myCollection.find()
+
+

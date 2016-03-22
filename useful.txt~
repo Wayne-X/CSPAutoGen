@@ -4,8 +4,11 @@ sudo mongod
 
 -- mongo shell instructions
 mongo
+
 show databases
 use webcontents
+db.dropDatabase()
+
 show collections
 db.myCollection.insert()
 db.myCollection.find()

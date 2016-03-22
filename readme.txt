@@ -26,7 +26,6 @@ node EECS-495-CSP/CSP-Applier/training/db_server.js
 -- -- database: webcontents
 -- -- collection: 
 
-
 cd EECS-495-CSP && exec ./render_site.sh -f sources.txt -m 10
 
 4. end crawling and scraping
@@ -34,5 +33,8 @@ cd EECS-495-CSP && exec ./render_site.sh -f sources.txt -m 10
 cd EECS-495-CSP && exec ./stop_all.sh
 
 5. begin script training
+node templateStage/makeTemplate.js webcontents purescripts templates
+
+6. 
 
 

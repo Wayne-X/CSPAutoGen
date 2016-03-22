@@ -5,7 +5,7 @@ sudo mongod
 -- mongo shell instructions
 mongo
 show databases
-use test
+use webcontents
 show collections
 db.myCollection.insert()
 db.myCollection.find()
@@ -18,9 +18,6 @@ db.myCollection.find()
 
 -- git stuff
 git add -A
-git commit -m ""
+git commit -m "
 git push
 
-
--- SHUTDOWN
-sudo service mongodb stop

@@ -1,0 +1,1 @@
+{"hash":"node3, AssignmentExpression; node4, AssignmentExpression; node2, ExpressionStatement; node1, Program; ","template":{"count":3,"tag":"Program","value":null,"node1":{"tag":"ExpressionStatement","value":"CONST","node2":{"tag":"non_nested_obj","value":"WILDCARD"}}}}

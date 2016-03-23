@@ -1,0 +1,1 @@
+(function(){varb=document.getElementsByClassName('js-mc-submit');if(b){for(vari=0;i<b.length;i++){if(b[i].value==='Subscribe'){b[i].addEventListener('click',function(){Krux('admEvent','KJH07LgG',{});});}}}})();

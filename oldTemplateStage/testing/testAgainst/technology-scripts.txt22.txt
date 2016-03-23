@@ -1,0 +1,1 @@
+(function(){varkuid=Krux('get','user');if(kuid&&typeofkuid!='undefined'){varprefix=location.protocol=='https:'?"https:":"http:";varr_url=prefix+'//cm.g.doubleclick.net/pixel'varkurl=prefix+'//apiservices.krxd.net/um?partner=google&r='+r_url;vari=newImage();i.src=kurl;}})();

@@ -1,0 +1,1 @@
+varurlPre="http://markets.money.cnn.com/";varcnnDomain="http://money.cnn.com/";varcookieDomain="cnn.com";vartzOffset=-240;//vartzOffset=-300;

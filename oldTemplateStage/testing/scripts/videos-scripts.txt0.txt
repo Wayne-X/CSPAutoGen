@@ -1,0 +1,1 @@
+(functionredirectLegacyVideoUrls(win){varloc=(win&&win.location)?win.location:{};if(loc.search&&loc.search.search(/^\?\/video\/.+$/)>=0){loc.replace('/videos/'+loc.search.replace(/^\?\/video\/(.+)$/,'$1'));}elseif(loc.hash&&loc.hash.search(/^\#\/video\/.+$/)>=0){loc.replace('/videos/'+loc.hash.replace(/^\#\/video\/(.+)$/,'$1'));}}(window));

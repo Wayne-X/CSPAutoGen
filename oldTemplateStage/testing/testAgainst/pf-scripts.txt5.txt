@@ -1,0 +1,1 @@
+varcnnActivePlayer=null;varcnnPlayers=[];varvidConfig=[];

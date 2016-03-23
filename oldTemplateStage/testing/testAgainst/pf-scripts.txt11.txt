@@ -1,0 +1,1 @@
+(function(){vare=prdom.query('.ntv243904-135020-99000');if(e.length>0&&!e[0].id){e[0].id='ntv243904-135020-99000';}})();

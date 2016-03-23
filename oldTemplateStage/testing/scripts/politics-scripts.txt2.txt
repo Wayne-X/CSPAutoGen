@@ -1,0 +1,1 @@
+!function(e,t,n){varr,c=e.getElementsByTagName(t)[0],d=window.CNN_ELECTIONS_2016||{};returne.getElementById(n)?d:(r=e.createElement(t),r.id=n,r.src="http://z.cdn.turner.com/cnn/.element/apps/election-center-2016/embeds.js",voidc.parentNode.insertBefore(r,c))}(document,"script","CNN_ELECTIONS_2016");

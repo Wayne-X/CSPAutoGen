@@ -1,0 +1,1 @@
+varcnnSiteWideCurrDate=newDate(2014,11,4);

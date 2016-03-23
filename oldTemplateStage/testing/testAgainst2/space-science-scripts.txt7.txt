@@ -1,0 +1,1 @@
+(function(doc,win){try{varscript=doc.createElement('script');script.src='http://segment-data-us-east.zqtk.net/turner-47fcf6?url=http%3A%2F%2Fwww.cnn.com%2Fspecials%2Fspace-science';script.id='proximicScript';win.setTimeout(function(proxScript){doc.body.appendChild(proxScript);}.bind(win,script),60000);}catch(e){console.log('FailurewithProximic:',e);};})(document,window);

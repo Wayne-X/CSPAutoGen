@@ -1,0 +1,1 @@
+//<metaname="p:domain_verify"content="718a6c01d9c64f65a94ae470b426f993”/>(function(){varmeta=document.createElement('meta');meta.setAttribute('name','p:domain_verify');meta.setAttribute('content','718a6c01d9c64f65a94ae470b426f993');document.head.appendChild(meta);})();

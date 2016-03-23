@@ -1,0 +1,1 @@
+!!document.getElementById("pivit-js")||(functionmakeAsyncScript(d,s,id){varjs,fjs;js=d.createElement(s);js.id=id;fjs=d.getElementsByTagName(s)[0];fjs.parentNode.insertBefore(js,fjs);js.src="https://cdn.pivit.io/web-assets/widgets/1.6.18/widgets.js";}(document,"script","pivit-js"));

@@ -1,0 +1,1 @@
+if(window.location.hostname==="ref2.money.cnn.com"){varcnnOmniture_prodenv=false;}elseif(window.location.hostname==="dev.money.cnn.com"){varcnnOmniture_prodenv=false;}elseif(window.location.hostname==="train.money.cnn.com"){varcnnOmniture_prodenv=false;}elseif(window.location.hostname==="stage.money.cnn.com"){varcnnOmniture_prodenv=false;}else{varcnnOmniture_prodenv=true;}

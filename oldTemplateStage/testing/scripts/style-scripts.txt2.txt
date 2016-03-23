@@ -1,0 +1,1 @@
+Livefyre.require(['streamhub-feed#3.0.1','streamhub-sdk#2.16.0'],function(Feed,SDK){vartile=newSDK.ContentListView({el:document.getElementById('livefyre-app-custom-1430910737076'),initial:1});varcollection=newSDK.Collection({network:'cnn.fyre.co',siteId:'374065',articleId:'custom-1430910737076'});collection.pipe(tile);});

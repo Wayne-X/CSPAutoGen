@@ -1,0 +1,1 @@
+<!--if(window.location.pathname.indexOf(".element")==-1&&window.location.href.indexOf("?fb_xd_fragment#?=&")==-1&&window.location.href.indexOf("search/index.html?")==-1){varjsmd=_jsmd.init();jsmd.send();}//-->

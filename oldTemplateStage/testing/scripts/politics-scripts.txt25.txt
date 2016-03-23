@@ -1,0 +1,1 @@
+(function(){varguid=Krux('get','user_attr_turner_guid');if(guid){varimg=newImage();img.src='//idsync.ipowow.com/s.gif?pid=16266&puid='+guid;img.setAttribute("style","width:0px;height:0px;visibility:hidden;");document.body.appendChild(img);}})();

@@ -1,0 +1,1 @@
+$(document).ready(function(){$('#_dianomi_iframe').attr('src','//www.dianomi.com/smartads.epl?id=2183&url='+escape(document.location.href));});

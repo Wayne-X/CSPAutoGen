@@ -1,0 +1,1 @@
+(function(){//ToPullGUIDKrux('scrape',{'user_attr_turner_guid':{cookie:'ug'}});//ToPullAdobeAnalyticsIDKrux('scrape',{'s_vi':{cookie:'s_vi'}});vars_vi=Krux('get','s_vi')||'';s_vi=s_vi.replace('[CS]v1|','');s_vi=s_vi.replace('[CE]','');Krux('set','user_attr_aa_id',s_vi);Krux('scrape',{'user_attr_af_id':{cookie:'s_fid'}});})()

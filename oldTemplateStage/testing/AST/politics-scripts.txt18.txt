@@ -1,0 +1,1 @@
+{"type":"Program","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"Identifier","name":"Krux"},"arguments":[{"type":"Literal","value":"social.init","raw":"'social.init'"}]}}],"sourceType":"script"}

@@ -1,0 +1,1 @@
+prdom.query(window).bind('DOMNodeInsertedreadyload',function(){PostRelease.disableAdsFromElement(prdom.query('.ntv243904-135020-99000'));});

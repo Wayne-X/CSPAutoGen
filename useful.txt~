@@ -24,3 +24,11 @@ git add -A
 git commit -m "
 git push
 
+node templateStage/makeTemplate.js webcontents purescripts templates
+node-debug templateStage/makeTemplate.js webcontents purescripts templates
+
+use webcontents_temp
+db.purescripts.insert("script":"bXlBcnJheSA9IFsxLCAyLCAzLCA0XTs=")
+db.purescripts.insert("script":"bXlPYmplY3QgPSB7Zmlyc3Q6IDEsIHNlY29uZDogMiwgdGhpcmQ6IDN9Ow==")
+db.purescripts.insert("script":"WzEsIDIsIDMsIDQsICJteVN0cmluZyIsIHRydWUsIGZhbHNlLCBudWxsLCB1bmRlZmluZWQsICJ1bmRlZmluZWQiLCAzLjIwXTs=")
+db.purescripts.insert("script":"bXlPYmplY3QgPSB7Zmlyc3Q6IDEsIHNlY29uZDogMiwgdGhpcmQ6IDMsIG15U3RyaW5nOiAidGhpcyBzdHJpbmciLCBteUJvb2w6IHRydWUsIG51bGw6IG51bGwsIHVuZGVmaW5lZDogdW5kZWZpbmVkfTs=")

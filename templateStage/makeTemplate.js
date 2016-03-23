@@ -535,8 +535,155 @@ function makeHashToGAST(uniqHash, allHash){
 	//			gasts
 	// output: 	a template for each element in the mapping (for each group of gASTS)
 	// 			(with each node containing a key for later matching, see paper)
+	// templateArr: array of templates to return
+	// tempTemplate: the current template being worked on (object tree)
+	// tempTemplateNode: the current node being worked on (object)
+	// tempTemplateNodeToWrite: the instance of tempTemplateNode inside tempTemplate
+	// tempNodeValues: array of values contained in all instances of a certain node
+	// 		used to determine type/key
 function makeTemplates(mapArr, gasts){
-	return ['todo'];
+	// temp to store templates to before returning
+	templateArr = [];
+	// for each hash, make a template
+	for (i in mapArr){
+		// temporary template
+		tempTemplate = gasts[mapArr[i][0]];
+		// get total node count
+		nodeCount = tempTemplate.count;
+		// for each node
+		for (k=1; k<nodeCount; k++){
+			tempNodeValues = []; tempTemplateNode = {};
+			for (j in mapArr[i]){
+				thisNode = getNode(gasts[mapArr[i][j]], "node" + String(k));
+				if (thisNode != undefined){tempNodeValues.push(thisNode.value);}
+			}
+			// determine type and value for that template node
+			tempTemplateNode.tag = getNode(tempTemplate, "node" + String[k]).tag;
+			tempTemplateNode.value = getTemplateNodeValue(tempNodeValues);
+			// write to tempTemplate
+			tempTemplateNodeToWrite = getNode(tempTemplate, "node" + String(k));
+			tempTemplateNodeToWrite.tag = tempTemplateNode.tag;
+			tempTemplateNodeToWrite.value = tempTemplateNode.value;
+		}
+		templateArr[i] = tempTemplate;
+	}
+
+	return templateArr;
+
+	// ------------------- functions
+
+	// getNode
+	// return the node "name" nested within gAST object "gAST"
+	function getNode(gAST, name){
+		// for all nested nodes
+		for(var key in gAST) {
+			if (getIfNode(key)){
+				// compare
+				if (key == name){
+					// console.log("returning: " + gAST[key]);
+					// console.log("returning has value: " + gAST[key].value); 
+					return gAST[key];
+				}
+				// traverse
+				return getNode(gAST[key], name);
+			}
+		}
+		return "error: not node not found";
+	}
+
+	// getIfNode
+	// true if object is a gAST node
+	// i.e. if the name begins with "node"
+	function getIfNode(key){
+		if (key.substring(0, 4) == "node"){
+			return true;
+		}
+		return false;
+	}
+
+	// getTemplateNodeValue
+	// given array of template node values
+	// determine what the corresponding template node should be
+	function getTemplateNodeValue(arr){
+		// CONST
+		if (ifCONST(arr)){return "CONST"};
+		// ENUM
+		if (ifENUM(arr)){return "ENUM"};
+		// NUMBER
+		if (IFNUMBER(arr)){return "NUMBER"};
+		// URI
+		if (ifURI(arr)){return "URI"};
+		// GAST
+		if (ifGAST(arr)){return "GAST"};
+		// REGEXP
+		if (ifREGEXP(arr)){return "REGEXP"};
+		// WILDCARD
+		return 'WILDCARD';
+
+		// ifCONST
+		// true if all elements in an array are the same
+		function ifCONST(arr){
+			for (i in arr){
+				if (arr[i] != arr[0]){
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// ifENUM
+		// true if the sample size is larger than threshold (120)
+		// and number of different values is significantly smaller
+		// (<= 5)
+		function ifENUM(arr){
+			if (arr.length < 120){return false;}
+			numOfUnique = (new Set(arr)).size;
+			if (arr.length - numOfUnique < 5){return false;}
+			return true;
+		}
+
+		// ifNUMBER
+		function IFNUMBER(arr){
+			for (i in arr){
+				if (isNaN(arr[i])){
+					return false
+				}
+			}
+			return true;
+		}
+
+		// ifURI
+		function ifURI(arr){
+			function isURL(s) {
+				var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+				return regexp.test(s);
+			}
+			for (i in arr){
+				if (!isURL(String(arr[i]))){return false;}
+			}
+			return true;
+		}
+
+		// ifGAST
+		function ifGAST(arr){
+			function getIfGAST(obj){
+				if (typeof obj != "object"){return false;}
+				if (obj.tag == undefined){return false;}
+				return true;
+			}
+			for (i in arr){
+				if (!getIfGAST(arr[i])){return false;}
+			}
+			return true;
+		}
+
+		// ifREGEXP
+		// TODO
+		function ifREGEXP(arr){
+			
+			return false
+		}		
+	}
 }
 
 // makeToWrite

@@ -34,6 +34,9 @@ cd EECS-495-CSP && exec ./stop_all.sh
 
 5. begin script training
 node templateStage/makeTemplate.js webcontents purescripts templates
+node templateStage/makeTemplate.js webcontents_temp purescripts templates
+node-debug templateStage/makeTemplate.js webcontents_temp purescripts templates
+
 
 6. 
 

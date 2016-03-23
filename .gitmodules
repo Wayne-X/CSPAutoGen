@@ -1,0 +1,3 @@
+[submodule "EECS-495-CSP"]
+	path = EECS-495-CSP
+	url = https://github.com/wmcalyj/EECS-495-CSP.git

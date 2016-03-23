@@ -26,10 +26,14 @@ var esprima = require('esprima');
 
 // global stuff in here
 dat = {
-	scripts: [],
-	ASTs: [],
-	gASTs: [],
-	hashes: [],
+	scripts: [],		// array of scripts read in
+	ASTs: [],			// array of ASTs
+	gASTs: [],			// array of gASTs
+	hashes: [],			// array of hashes
+	uniqHashes: [],		// array of unique hashes
+	hashToGAST: [],		// array of arrays containing indexes of gASTs with that uniqHash
+	templates: [],		// array of templates
+	toWrite: [],		// array of objects with .hash from uniqHashes and .template from templates
 }
 
 // Check call, get source and destination addresses
@@ -73,6 +77,16 @@ function gotScripts(){
 	dat.gASTs = makegASTs(dat.ASTs);
 	// make hashes
 	dat.hashes = makeHashes(dat.gASTs);
+	// make unique hashes
+	dat.uniqHashes = makeUniqHashes(dat.hashes);
+	// map uniqHashes to original gASTs
+	dat.hashToGAST = makeHashToGAST(dat.uniqHashes, dat.hashes);
+	// make templates using unique hashes and original gasts
+	dat.templates = makeTemplates(dat.hashToGAST, dat.gASTs);
+	// construct objects to write to the database
+	dat.toWrite = makeToWrite(dat.templates, dat.uniqHashes);
+	// write to the database
+	writeToDatabase(dat.toWrite);
 
 	console.log("made all");
 }
@@ -459,8 +473,10 @@ function makeHashes(inArray){
 			if (getIfNode(key)){
 				hash = makeHash(obj[key], hash);
 				hash = hash.concat(key);
-				hash = hash.concat(", ");
+				hash = hash.concat(": tag=");
 				hash = hash.concat(obj.tag);
+				hash = hash.concat(", value=");
+				hash = hash.concat(obj.value);
 				hash = hash.concat("; ");
 			}
 		}
@@ -477,4 +493,67 @@ function makeHashes(inArray){
 			return false;
 		}
 	}
+}
+
+// makeUniqHashes
+	// input: an array of hashes
+	// output: an array of unique hashes, duplicates removed
+function makeUniqHashes(hashArr){
+    var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
+
+    return hashArr.filter(function(item) {
+        var type = typeof item;
+        if(type in prims)
+            return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
+        else
+            return objs.indexOf(item) >= 0 ? false : objs.push(item);
+    });
+}
+
+// makeHashToGAST
+	// input: array of unique hashes, subset of array of hashes
+	// output: mapping of unique hashes to the hashes they came from
+	// ex: [A, B, C], [A, A, C, B, C] -> [[0, 1], [3], [2, 4]]
+	// map uniqHashes to original gASTs
+function makeHashToGAST(uniqHash, allHash){
+	mapArr = [];
+
+	for (i in uniqHash){
+		mapArr[i] = [];
+		for (j in allHash){
+			if (uniqHash[i] == allHash[j]){
+				mapArr[i].push(parseInt(j));
+			}
+		}
+	}
+
+	return mapArr;
+}
+
+// makeTemplates
+	// input: 	mapping (each element has indexes to matched gASTS)
+	//			gasts
+	// output: 	a template for each element in the mapping (for each group of gASTS)
+	// 			(with each node containing a key for later matching, see paper)
+function makeTemplates(mapArr, gasts){
+	return ['todo'];
+}
+
+// makeToWrite
+	// construct objects to write to the database
+	// input: array of templates, array of hashes
+	// output: array of objects where each object has:
+	// 				- .template from templates
+	// 				- .hash from .hashes 
+function makeToWrite(templates, hashes){
+	return [];
+}
+
+// writeToDatabase
+	// write to the database
+	// input: array of objects to write, db and collection to write to
+	// action: writes each element in the array as a single entry to that db/collection
+	// output: 1 if successful, 0 if not
+function writeToDatabase(dbToWrite, collectionToWrite, toWrite){
+	return 'not done';
 }

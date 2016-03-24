@@ -86,9 +86,9 @@ function gotScripts(){
 	// construct objects to write to the database
 	dat.toWrite = makeToWrite(dat.templates, dat.uniqHashes);
 	// write to the database
-	writeToDatabase(dat.toWrite);
-
-	console.log("made all");
+	// flow does not return after this function
+	writeToDatabase(dbName, destCollection, dat.toWrite);
+	return;
 }
 
 // processScripts()
@@ -555,17 +555,17 @@ function makeTemplates(mapArr, gasts){
 			tempNodeValues = []; tempTemplateNode = {};
 			for (j in mapArr[i]){
 				thisNode = getNode(gasts[mapArr[i][j]], "node" + String(k));
-				if (thisNode != undefined){tempNodeValues.push(thisNode.value);}
+				if (thisNode != "error: not node not found"){tempNodeValues.push(thisNode.value);}
 			}
 			// determine type and value for that template node
-			tempTemplateNode.tag = getNode(tempTemplate, "node" + String[k]).tag;
+			tempTemplateNode.tag = getNode(tempTemplate, "node" + String(k)).tag;
 			tempTemplateNode.value = getTemplateNodeValue(tempNodeValues);
 			// write to tempTemplate
 			tempTemplateNodeToWrite = getNode(tempTemplate, "node" + String(k));
 			tempTemplateNodeToWrite.tag = tempTemplateNode.tag;
 			tempTemplateNodeToWrite.value = tempTemplateNode.value;
 		}
-		templateArr[i] = tempTemplate;
+		templateArr.push(tempTemplate);
 	}
 
 	return templateArr;
@@ -693,7 +693,14 @@ function makeTemplates(mapArr, gasts){
 	// 				- .template from templates
 	// 				- .hash from .hashes 
 function makeToWrite(templates, hashes){
-	return [];
+	toWrite = [];
+	for (i in templates){
+		toWrite[i] = {};
+		toWrite[i].template = templates[i];
+		toWrite[i].hash = hashes[i];
+	}
+
+	return toWrite;
 }
 
 // writeToDatabase
@@ -702,5 +709,20 @@ function makeToWrite(templates, hashes){
 	// action: writes each element in the array as a single entry to that db/collection
 	// output: 1 if successful, 0 if not
 function writeToDatabase(dbToWrite, collectionToWrite, toWrite){
-	return 'not done';
+	// connect to database
+	MongoClient.connect('mongodb://localhost:27017/' + dbToWrite, function(err, db) {
+		// get collection
+		templateCollection = db.collection(collectionToWrite);
+		// clear collection
+		templateCollection.drop(function(err, r){
+			assert.equal(null, err);
+			console.log("dropped");
+			// insert new stuff
+			templateCollection.insertMany(toWrite, function(err, r) {
+				assert.equal(null, err);
+				assert.equal(toWrite.length, r.insertedCount);
+				db.close();
+			});
+		});
+	});
 }

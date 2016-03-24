@@ -51,7 +51,7 @@ node EECS-495-CSP/CSP-Applier/training/db_server.js
 
 3. match (by script or by collection)
 
-node templateStage/ifMatch.js dbName collectionName [scriptQuery]
+node templateStage/ifMatch.js dbName collectionName [script ObjectID]
 node templateStage/ifMatch.js webcontents_temp compareScripts
-node templateStage/ifMatch.js webcontents_temp compareScripts { _id: ObjectId("56f2eea51cd7e16f99b900ee") }
+node templateStage/ifMatch.js webcontents_temp compareScripts 56f2eea51cd7e16f99b900ee
 

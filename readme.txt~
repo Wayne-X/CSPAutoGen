@@ -11,7 +11,7 @@ tools
 items in this directory contains integration of the two and
 quickstart scripts
 
--- USAGE STEPS
+////////////////////////////////////// TRAINING
 1. start mongodb
 
 sudo service mongodb stop
@@ -25,7 +25,7 @@ node EECS-495-CSP/CSP-Applier/training/db_server.js
 -- reads the URLs from sources.txt, crawls and scrapes
 -- saves to mongodb
 -- -- database: webcontents
--- -- collection: 
+-- -- collection: purescripts
 
 cd EECS-495-CSP && exec ./render_site.sh -f sources.txt -m 10
 
@@ -39,6 +39,19 @@ node templateStage/makeTemplate.js webcontents purescripts templates
 node templateStage/makeTemplate.js webcontents_temp purescripts templates
 node-debug templateStage/makeTemplate.js webcontents_temp purescripts templates
 
-6. 
+////////////////////////////////////// MATCHING
+1. start mongodb
 
+sudo service mongodb stop
+sudo mongod
+
+2. start db server (in separate terminal)
+
+node EECS-495-CSP/CSP-Applier/training/db_server.js
+
+3. match (by script or by collection)
+
+node templateStage/ifMatch.js dbName collectionName [script objectID]
+node templateStage/ifMatch.js webcontents_temp compareScripts
+node templateStage/ifMatch.js webcontents_temp compareScripts 56f2eea51cd7e16f99b900ee
 

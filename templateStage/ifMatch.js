@@ -1,7 +1,7 @@
 // Returns if script(s) match templates stored on the MongoDB database
-// call with "node ifMatch.js dbName collectionName [scriptQuery]"
+// call with "node ifMatch.js dbName collectionName [script ObjectID]"
 // many scripts example: "node ifMatch.js webcontents purescripts"
-// single script example: "node ifMatch.js webcontents purescripts { _id: ObjectId("56f2eea51cd7e16f99b900ee") }"
+// single script example: "node ifMatch.js webcontents purescripts 56f2eea51cd7e16f99b900ee
 // dbName is the name of the MongoDB database containing the script to query
 // collectionName is the collection containing the script(s)
 // scriptQuery is the optional argument to specify the script to query for 
@@ -39,22 +39,39 @@ if ((numOfArgs < 3) || (numOfArgs > 5)){
 
 dbName = String(process.argv[2]);
 collName = String(process.argv[3]);
-var scriptQuery;
-if (numOfArgs == 5){scriptQuery = String(process.argv[4]);}
+var scriptQuery; var ifSingle = false;
+if (numOfArgs == 5){
+	scriptQuery = {"_id": new ObjectID(String(process.argv[4]))};
+	ifSingle = true;
+}
 
 // get scripts, flow continues at function "gotScripts"
 MongoClient.connect("mongodb://localhost:27017/" + dbName, {native_parser:true}, function(err, db) {
 	assert.equal(null, err);
-	var cursor = db.collection(collName).find();
-	cursor.each(function(err, doc) {
-		assert.equal(err, null);
-		if (doc != null) {
-			dat.scripts.push(doc);
-		} else {
+	if (ifSingle){
+		db.collection(collName).findOne(scriptQuery, function(err, item) {
+			assert.equal(null, err);
+			console.log("collection: " + collName);
+			console.log("got: " + JSON.stringify(item));
+			if (item != null){
+				dat.scripts.push(item);
+			}
 			db.close();
 			gotScripts();
-		}
-	});
+		})
+	}
+	else {
+		var cursor = db.collection(collName).find();
+		cursor.each(function(err, doc) {
+			assert.equal(err, null);
+			if (doc != null) {
+				dat.scripts.push(doc);
+			} else {
+				db.close();
+				gotScripts();
+			}
+		});
+	}
 });
 
 // gotScripts()

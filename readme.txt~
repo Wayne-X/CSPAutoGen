@@ -14,10 +14,9 @@ quickstart scripts
 -- USAGE STEPS
 1. start mongodb
 
-sudo service mongodb stop
-sudo mongod
+mongod
 
-2. start db server (in separate terminal)
+2. start db server (in separate instance)
 
 node EECS-495-CSP/CSP-Applier/training/db_server.js
 
@@ -32,12 +31,12 @@ cd EECS-495-CSP && exec ./render_site.sh -f sources.txt -m 10
 4. end crawling and scraping
 
 cd EECS-495-CSP && exec ./stop_all.sh
-focus on db server terminal, ctrl+c
 
 5. begin script training
 node templateStage/makeTemplate.js webcontents purescripts templates
 node templateStage/makeTemplate.js webcontents_temp purescripts templates
 node-debug templateStage/makeTemplate.js webcontents_temp purescripts templates
+
 
 6. 
 

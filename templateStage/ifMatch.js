@@ -24,10 +24,12 @@ var esprima = require('esprima');
 
 // global stuff in here
 dat = {
+	templates: [],		// array of templates
 	scripts: [],		// array of scripts read in
 	ASTs: [],			// array of ASTs
 	gASTs: [],			// array of gASTs
 	hashes: [],			// array of hashes
+	result: {safe: 0, notSafe: 0,},		// result object with safe/notSafe counts
 }
 
 // Check call, get source and destination addresses
@@ -56,8 +58,7 @@ MongoClient.connect("mongodb://localhost:27017/" + dbName, {native_parser:true},
 			if (item != null){
 				dat.scripts.push(item);
 			}
-			db.close();
-			gotScripts();
+			getTemplates(db);
 		})
 	}
 	else {
@@ -67,11 +68,23 @@ MongoClient.connect("mongodb://localhost:27017/" + dbName, {native_parser:true},
 			if (doc != null) {
 				dat.scripts.push(doc);
 			} else {
+				getTemplates(db);
+			}
+		});
+	}
+
+	function getTemplates(db){
+		var cursor = db.collection("templates").find();
+		cursor.each(function(err, doc) {
+			assert.equal(err, null);
+			if (doc != null) {
+				dat.templates.push(doc);
+			} else {
 				db.close();
 				gotScripts();
 			}
 		});
-	}
+	}	
 });
 
 // gotScripts()
@@ -90,6 +103,12 @@ function gotScripts(){
 	dat.gASTs = makegASTs(dat.ASTs);
 	// make hashes
 	dat.hashes = makeHashes(dat.gASTs);
+	// compare
+	dat.result = makeResult(dat.templates, dat.hashes, dat.gASTs);
+	// print
+	console.log("Total number of scripts: " + dat.scripts.length);
+	console.log("Safe scripts: " + dat.result.safe);
+	console.log("Unsafe scripts: " + dat.result.notSafe);
 	return;
 }
 
@@ -97,6 +116,10 @@ function gotScripts(){
 	// given input array of script objects, decode string in 
 	// "script" field from base 64
 function processScripts(inArray){
+	if (inArray.length == 0){
+		console.log("error: nothing found in database at given db and collection");
+		process.exit();
+	}
 	outArray = [];
 	for (i in inArray){
 		tempObj = inArray[i];
@@ -494,5 +517,30 @@ function makeHashes(inArray){
 			}
 			return false;
 		}
+	}
+}
+
+// makeResult
+	// input: templates for comparison, hashes and gasts to compare
+	// output: results object with count of matches/non matches
+function makeResult(templates, hashes, gasts){
+	yesCount = 0; noCount = 0;
+	for (i in hashes){
+		for (j in templates){
+			if ((hashes[i] == templates[j].hash) &&
+				(getIfGASTMatchesTemplate(gasts[i], templates[j].template))){
+				yesCount++;
+				break;
+			}
+		}
+	}
+	return {safe: yesCount, notSafe: hashes.length - yesCount,};
+
+	// --------------------- functions
+
+	// true if gast legally matches template for each key
+	// false otherwise
+	function getIfGASTMatchesTemplate(gast, template){
+		return true;
 	}
 }

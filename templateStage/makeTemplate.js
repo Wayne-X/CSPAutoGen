@@ -559,11 +559,13 @@ function makeTemplates(mapArr, gasts){
 			}
 			// determine type and value for that template node
 			tempTemplateNode.tag = getNode(tempTemplate, "node" + String(k)).tag;
-			tempTemplateNode.value = getTemplateNodeValue(tempNodeValues);
+			tempTemplateNode.value = getTemplateNodeStuff(tempNodeValues).value;
+			tempTemplateNode.info = getTemplateNodeStuff(tempNodeValues).info;
 			// write to tempTemplate
 			tempTemplateNodeToWrite = getNode(tempTemplate, "node" + String(k));
 			tempTemplateNodeToWrite.tag = tempTemplateNode.tag;
 			tempTemplateNodeToWrite.value = tempTemplateNode.value;
+			tempTemplateNodeToWrite.info = tempTemplateNode.info;
 		}
 		templateArr.push(tempTemplate);
 	}
@@ -604,21 +606,38 @@ function makeTemplates(mapArr, gasts){
 	// getTemplateNodeValue
 	// given array of template node values
 	// determine what the corresponding template node should be
-	function getTemplateNodeValue(arr){
+	function getTemplateNodeStuff(arr){
+		toReturn = {};
 		// CONST
-		if (ifCONST(arr)){return "CONST"};
+		if (ifCONST(arr)){
+			toReturn.value = "CONST";
+			toReturn.info = arr[0];
+		};
 		// ENUM
-		if (ifENUM(arr)){return "ENUM"};
+		if (ifENUM(arr)){
+			toReturn.value = "ENUM";
+			toReturn.info = getEnumInfo(arr);
+		};
 		// NUMBER
-		if (IFNUMBER(arr)){return "NUMBER"};
+		if (IFNUMBER(arr)){
+			toReturn.value = "NUMBER";
+		};
 		// URI
-		if (ifURI(arr)){return "URI"};
+		if (ifURI(arr)){
+			toReturn.value = "URI";
+			toReturn.info = getURIInfo(arr);
+		};
 		// GAST
-		if (ifGAST(arr)){return "GAST"};
+		if (ifGAST(arr)){
+			toReturn.value = "GAST";
+		};
 		// REGEXP
-		if (ifREGEXP(arr)){return "REGEXP"};
-		// WILDCARD
-		return 'WILDCARD';
+		if (toReturn.value == undefined){
+			toReturn.value = "REGEXP";
+			toReturn.info = getREGEXP(arr);
+		};
+
+		return toReturn;
 
 		// ifCONST
 		// true if all elements in an array are the same
@@ -640,6 +659,12 @@ function makeTemplates(mapArr, gasts){
 			numOfUnique = (new Set(arr)).size;
 			if (arr.length - numOfUnique < 5){return false;}
 			return true;
+		}
+
+		// return array of legal enum values
+		function getEnumInfo(arr){
+			// gets only unique values
+			return Array.from(new Set(arr));
 		}
 
 		// ifNUMBER
@@ -664,24 +689,62 @@ function makeTemplates(mapArr, gasts){
 			return true;
 		}
 
+		// returns array of legal domains
+		function getURIInfo(arr){
+			// make array of strings into domains
+			for (i in arr){
+				arr[i] = extractDomain(arr[i]);
+			}
+
+			// make unique
+			for (i in arr){
+				arr = Array.from(new Set(arr));
+			}
+
+			return arr;
+
+			function extractDomain(url) {
+			    var domain;
+			    //find & remove protocol (http, ftp, etc.) and get domain
+			    if (url.indexOf("://") > -1) {
+			        domain = url.split('/')[2];
+			    }
+			    else {
+			        domain = url.split('/')[0];
+			    }
+
+			    //find & remove port number
+			    domain = domain.split(':')[0];
+
+			    return domain;
+			}
+		}
+
 		// ifGAST
 		function ifGAST(arr){
-			function getIfGAST(obj){
-				if (typeof obj != "object"){return false;}
-				if (obj.tag == undefined){return false;}
-				return true;
-			}
 			for (i in arr){
 				if (!getIfGAST(arr[i])){return false;}
 			}
 			return true;
+
+			function getIfGAST(obj){
+				if (obj == null){return false;}
+				if (typeof obj != "object"){return false;}
+				if (obj.tag == undefined){return false;}
+				return true;
+			}
 		}
 
-		// ifREGEXP
-		// TODO
-		function ifREGEXP(arr){
-			
-			return false
+		// getREGEXP
+		function getREGEXP(arr){
+			if (arr[0] == null){return}
+			var min = arr[0].length; var max = arr[0].length;
+			for (i in arr){
+				if (arr[i].length < min){min = arr[i].length;}
+				if (arr[i].length > max){max = arr[i].length;}
+			}
+			// ^.{0,150}$
+			return "^.{" + min + "," + max + "}$";
 		}		
 	}
 }
@@ -716,7 +779,6 @@ function writeToDatabase(dbToWrite, collectionToWrite, toWrite){
 		// clear collection
 		templateCollection.drop(function(err, r){
 			assert.equal(null, err);
-			console.log("dropped");
 			// insert new stuff
 			templateCollection.insertMany(toWrite, function(err, r) {
 				assert.equal(null, err);

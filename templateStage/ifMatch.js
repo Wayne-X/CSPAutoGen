@@ -541,6 +541,131 @@ function makeResult(templates, hashes, gasts){
 	// true if gast legally matches template for each key
 	// false otherwise
 	function getIfGASTMatchesTemplate(gast, template){
-		return true;
+		nodeCount = template.count;
+		for (i = 1; i<nodeCount; i++){
+			templateNode = getNode(template, "node" + i);
+			gastNode = getNode(gast, "node" + i);
+			if (getIfNodeMatchesKey(gastNode, templateNode)){
+				return true;
+			}
+		}
+		return false;
+
+		// --------------------------- functions
+
+		// getNode
+		// return the node "name" nested within gAST object "gAST"
+		function getNode(gAST, name){
+			// for all nested nodes
+			for(var key in gAST) {
+				if (getIfNode(key)){
+					// compare
+					if (key == name){
+						// console.log("returning: " + gAST[key]);
+						// console.log("returning has value: " + gAST[key].value); 
+						return gAST[key];
+					}
+					// traverse
+					return getNode(gAST[key], name);
+				}
+			}
+			return "error: not node not found";
+		}
+
+		// getIfNode
+		// true if object is a gAST node
+		// i.e. if the name begins with "node"
+		function getIfNode(key){
+			if (key.substring(0, 4) == "node"){
+				return true;
+			}
+			return false;
+		}
+
+		// true if gast node matches key in template node
+		function getIfNodeMatchesKey(gastNode, templateNode){
+			switch (templateNode.value) {
+				case "CONST":
+					// if gast value is that constant, true
+					if (gastNod.value == templateNode.info){return true;}
+					return false
+					break;
+				case "ENUM":
+					// if gast value is any of the enum values, true
+					for (i in templateNode.info){
+						if (gastNode.value == templateNode.info[i]){
+							return true;
+						}
+					}
+					return false;
+					break;
+				case "NUMBER":
+					// if gast value is a number
+					if (!isNaN(gastNode.value)){
+						return true;
+					}
+					return false;
+					break;
+				case "URI":
+					// if the value is also a domain, check if it matches
+					// ANY Of the domains in the template node info field
+					if (isURL(gastNode.value)){
+						domain = extractDomain(gastNode.value);
+						for (i in templateNode.info){
+							if (domain == templateNode.info[i]){
+								return true;
+							}
+						}
+					}
+					return false;
+
+					// --------------------- functions
+
+					function isURL(s) {
+						var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+						return regexp.test(s);
+					}
+
+					function extractDomain(url) {
+						var domain;
+						//find & remove protocol (http, ftp, etc.) and get domain
+						if (url.indexOf("://") > -1) {
+							domain = url.split('/')[2];
+						}
+						else {
+							domain = url.split('/')[0];
+						}
+
+						//find & remove port number
+						domain = domain.split(':')[0];
+
+						return domain;
+					}
+					break;
+				case "GAST":
+					// true if gast node is a gAST
+					if (getIfGAST(gastNode)){return true;}
+					return false;
+
+					function getIfGAST(obj){
+						if (obj == null){return false;}
+						if (typeof obj != "object"){return false;}
+						if (obj.tag == undefined){return false;}
+						return true;
+					}
+					break;
+				case "REGEXP":
+					// test given template regexp against gAST node value
+					if (templateNode == null){return false;}
+					if (templateNode.info == null){return false;}
+					if (templateNode.info.test == null){return false;}
+					regx = templateNode.info;
+					return regx.test(gastNode.value);
+					break;
+				default:
+					console.log("unrecognized template key");
+					return false;
+			}
+		}
 	}
 }

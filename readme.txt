@@ -4,68 +4,63 @@ with wmcalyj and wayne-x. Adds better scraping and js based
 template tools, relative to previous repo.
 
 "EECS-495-CSP" contains Mengchao's scraping tools
-
 "templateStage" contains Wayne's template creation/matching
 tools
 
-items in this directory contains integration of the two and
-quickstart scripts
-
 ////////////////////////////////////// TRAINING
-1. start mongodb
+     1. start mongodb
 
 sudo service mongodb stop
 sudo mongod
 
-2. start db server (in separate terminal)
+     2. start db server (in separate terminal)
 
 node EECS-495-CSP/CSP-Applier/training/db_server.js
 
-3. crawl and scrape for scripts (in separate instance)
--- reads the URLs from sources.txt, crawls and scrapes
--- saves to mongodb
--- -- database: webcontents
--- -- collection: purescripts
+     3. crawl and scrape for scripts (in separate instance)
+     -- reads the URLs from sources.txt, crawls and scrapes
+     -- saves to mongodb
+     -- -- database: webcontents
+     -- -- collection: purescripts
 
 cd EECS-495-CSP && exec ./render_site.sh -f sources.txt -m 10
 
-4. end crawling and scraping
+     4. end crawling and scraping
 
 cd EECS-495-CSP && exec ./stop_all.sh
 focus on db server terminal, ctrl+c
 
-5. begin script training
+     5. begin script training
+
 node templateStage/makeTemplate.js webcontents purescripts templates
-node templateStage/makeTemplate.js webcontents_temp purescripts templates
-node-debug templateStage/makeTemplate.js webcontents_temp purescripts templates
 
 ////////////////////////////////////// MATCHING
-1. start mongodb
+     1. start mongodb
 
 sudo service mongodb stop
 sudo mongod
 
-2. start db server (in separate terminal)
+     2. start db server (in separate terminal)
 
 node EECS-495-CSP/CSP-Applier/training/db_server.js
 
-3. crawl and scrape for scripts (in separate instance)
--- reads the URLs from sources.txt, crawls and scrapes
--- saves to mongodb
--- -- database: webcontents
--- -- collection: compareScripts
+     3. crawl and scrape for scripts (in separate instance)
+     -- reads the URLs from sources.txt, crawls and scrapes
+     -- saves to mongodb
+     -- -- database: webcontents
+     -- -- collection: compareScripts
 
 ??? cd EECS-495-CSP && exec ./render_site.sh -f sources.txt -m 10
 // todo, ask Mengchao to modify write collection
 
-4. end crawling and scraping
+     4. end crawling and scraping
 
 cd EECS-495-CSP && exec ./stop_all.sh
 focus on db server terminal, ctrl+c
 
-5. match (by script or by collection)
+     5. match (by script or by collection)
 
 node templateStage/ifMatch.js dbName collectionName [script ObjectID]
-node templateStage/ifMatch.js webcontents_temp compareScripts
-node templateStage/ifMatch.js webcontents_temp compareScripts 56f2eea51cd7e16f99b900ee
+node templateStage/ifMatch.js webcontents compareScripts
+node templateStage/ifMatch.js webcontents compareScripts 56f2eea51cd7e16f99b900ee
 

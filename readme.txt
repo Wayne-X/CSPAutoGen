@@ -7,6 +7,13 @@ template tools, relative to previous repo.
 "templateStage" contains Wayne's template creation/matching
 tools
 
+////////////////////////////////////// SETUP
+Install the following: 
+node.js
+mongodb
+node inspector
+python
+
 ////////////////////////////////////// TRAINING
      1. start mongodb
 

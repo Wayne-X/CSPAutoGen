@@ -1,14 +1,16 @@
 // Creates template given where scripts are hosted on
 // MongoDB server
-// call with "node makeTemplate.js databaseName srcCollection destCollection"
-// example: "node makeTemplate.js webcontents purescripts templates"
-// databaseName is the name of the MongoDB database for both collections
-// srcCollection is the collection with scripts
-// destCollection is the collection to write templates to
+
+// call with "node makeTemplate.js"
+// example: "node makeTemplate.js"
+
+// writes to database: webcontents, collection: template_domainName
+// example - database: webcontents, collection: template_cnn.com
 
 // INCLUDE
 // file write/read
 var fs = require('fs');
+var url = require('url');
 // MongoDB
 var Db = require('mongodb').Db,
     MongoClient = require('mongodb').MongoClient,
@@ -27,6 +29,7 @@ var esprima = require('esprima');
 // global stuff in here
 dat = {
 	scripts: [],		// array of scripts read in
+	url: [],			// array of url objects
 	ASTs: [],			// array of ASTs
 	gASTs: [],			// array of gASTs
 	hashes: [],			// array of hashes
@@ -38,13 +41,23 @@ dat = {
 
 // Check call, get source and destination addresses
 numOfArgs = process.argv.length;
-if (numOfArgs != 5){
-	console.log("improper call. Call with:\nnode makeTemplate.js databaseName srcCollection destCollection");
+if (numOfArgs > 3){
+	console.log("improper call. Call with:\nnode makeTemplate.js");
 	return;
 }
-dbName = String(process.argv[2]);
-srcCollection = String(process.argv[3]);
-destCollection = String(process.argv[4]);
+
+// these used to be passed in, are now hardcoded
+// srcCollection = String(process.argv[3]);
+// destCollection = String(process.argv[4]);
+srcCollection = "purescripts";
+destCollection = "templates";
+dbName = "webcontents";
+
+// optional database option
+if (numOfArgs == 3){
+	dbName = String(process.argv[2]);
+}
+
 
 // get scripts, flow continues at function "gotScripts"
 MongoClient.connect("mongodb://localhost:27017/" + dbName, {native_parser:true}, function(err, db) {
@@ -69,7 +82,7 @@ MongoClient.connect("mongodb://localhost:27017/" + dbName, {native_parser:true},
 	// for each script, make AST, gAST, hash
 	// flow continues at makeTemplate
 function gotScripts(){
-	// decode from base64
+	// decode from base64, get url
 	dat.scripts = processScripts(dat.scripts);
 	// make ASTs
 	dat.ASTs = makeASTs(dat.scripts);
@@ -94,28 +107,66 @@ function gotScripts(){
 // processScripts()
 	// given input array of script objects, decode string in 
 	// "script" field from base 64
+	// also gets url and path
 function processScripts(inArray){
 	outArray = [];
 	for (i in inArray){
-		tempObj = inArray[i];
+		tempObj = {};
 		tempObj.script = (new Buffer(inArray[i].script, 'base64')).toString();	// decode
-		//trim(	// trim
 		if (validScriptString(tempObj.script)){
+			dat.url.push(getDomain(inArray[i].url));			
 			outArray.push(tempObj);
-		}
-		function validScriptString(str){
-			if  ((str == "//thistagisintentionallyblank") ||
-				(str.length < 3) ||
-				(str == null) ||
-				(str == "null") ||
-				(str == undefined) ||
-				(str == "undefined")){
-				return false
-			}
-			return true;
 		}
 	}
 	return outArray
+
+	// ------------------------------- functions
+
+	function validScriptString(str){
+		if  ((str == "//thistagisintentionallyblank") ||
+			(str.length < 3) ||
+			(str == null) ||
+			(str == "null") ||
+			(str == undefined) ||
+			(str == "undefined")){
+			return false
+		}
+		return true;
+	}
+
+	function getDomain(url) {
+		if (url == undefined){
+			return '';
+		}
+
+		var hostName = getHostName(url);
+		var domain = hostName;
+
+		if (hostName != null) {
+			var parts = hostName.split('.').reverse();
+
+			if (parts != null && parts.length > 1) {
+				domain = parts[1] + '.' + parts[0];
+
+				if (hostName.toLowerCase().indexOf('.co.uk') != -1 && parts.length > 2) {
+					domain = parts[2] + '.' + domain;
+				}
+			}
+		}
+
+		return domain;
+	}
+
+	function getHostName(url) {
+		var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+		if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+			return match[2];
+		}
+		else {
+			return null;
+		}
+	}	
+
 }
 
 // makeASTs
@@ -755,12 +806,15 @@ function makeTemplates(mapArr, gasts){
 	// output: array of objects where each object has:
 	// 				- .template from templates
 	// 				- .hash from .hashes 
+	//				- .host from script.url.host
+	//				- .path from script.url.path
 function makeToWrite(templates, hashes){
 	toWrite = [];
 	for (i in templates){
 		toWrite[i] = {};
 		toWrite[i].template = templates[i];
 		toWrite[i].hash = hashes[i];
+		toWrite[i].domain = dat.url[dat.hashToGAST[i][0]];
 	}
 
 	return toWrite;
@@ -771,20 +825,34 @@ function makeToWrite(templates, hashes){
 	// input: array of objects to write, db and collection to write to
 	// action: writes each element in the array as a single entry to that db/collection
 	// output: 1 if successful, 0 if not
-function writeToDatabase(dbToWrite, collectionToWrite, toWrite){
+function writeToDatabase(dbToWrite, collectionToWrite, toWriteDat){
+	// push each template into hostContainer under domain string as tag
+	hostContainer = {};
+	for (i in toWriteDat){
+		if (hostContainer[toWriteDat[i].domain] == undefined){
+			hostContainer[toWriteDat[i].domain] = [];
+		}
+		hostContainer[toWriteDat[i].domain].push(toWriteDat[i]);
+	}
+
+	// for each unique domain, write to collection
+	for (tag in hostContainer){
+		writeToCollection(dbToWrite, "template_" + tag, hostContainer[tag]);
+	}
+}
+
+function writeToCollection(dbToWrite, collectionToWrite, toWriteColl){
+	console.log("writing to: " + dbToWrite + ", " + collectionToWrite);
 	// connect to database
 	MongoClient.connect('mongodb://localhost:27017/' + dbToWrite, function(err, db) {
 		// get collection
 		templateCollection = db.collection(collectionToWrite);
-		// clear collection
-		templateCollection.drop(function(err, r){
+		//assert.equal(null, err);
+		// insert new stuff
+		templateCollection.insertMany(toWrite, function(err, r) {
 			assert.equal(null, err);
-			// insert new stuff
-			templateCollection.insertMany(toWrite, function(err, r) {
-				assert.equal(null, err);
-				assert.equal(toWrite.length, r.insertedCount);
-				db.close();
-			});
+			assert.equal(toWrite.length, r.insertedCount);
+			db.close();
 		});
 	});
 }

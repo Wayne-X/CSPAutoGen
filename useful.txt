@@ -31,6 +31,11 @@ use webcontents_temp
 db.compareScripts.insert({"script":"bXlBcnJheSA9IFsxLCAyLCAzLCA0XTs="})
 db.compareScripts.insert({"script":"bXlPYmplY3QgPSB7Zmlyc3Q6IDEsIHNlY29uZDogMiwgdGhpcmQ6IDN9Ow=="})
 db.purescripts.insert({"script":"bXlBcnJheSA9IFsxLCAyLCAzLCA0XTs="})
-db.purescripts.insert({"script":"bXlPYmplY3QgPSB7Zmlyc3Q6IDEsIHNlY29uZDogMiwgdGhpcmQ6IDN9Ow=="})
-db.purescripts.insert({"script":"WzEsIDIsIDMsIDQsICJteVN0cmluZyIsIHRydWUsIGZhbHNlLCBudWxsLCB1bmRlZmluZWQsICJ1bmRlZmluZWQiLCAzLjIwXTs="})
+db.purescripts.insert({"url": "http://www.cnn.com/a/b/c/", "script":"bXlPYmplY3QgPSB7Zmlyc3Q6IDEsIHNlY29uZDogMiwgdGhpcmQ6IDN9Ow=="})
+
+db.purescripts.insert({"url": "https://www.ccn.com/this/that/something", "script":"WzEsIDIsIDMsIDQsICJteVN0cmluZyIsIHRydWUsIGZhbHNlLCBudWxsLCB1bmRlZmluZWQsICJ1bmRlZmluZWQiLCAzLjIwXTs="})
+
+db.purescripts.find({"url" : {$regex : ".*cnn.*"}})
+db.purescripts.find({"url": "cnn"})
+
 db.purescripts.insert({"script":"bXlPYmplY3QgPSB7Zmlyc3Q6IDEsIHNlY29uZDogMiwgdGhpcmQ6IDMsIG15U3RyaW5nOiAidGhpcyBzdHJpbmciLCBteUJvb2w6IHRydWUsIG51bGw6IG51bGwsIHVuZGVmaW5lZDogdW5kZWZpbmVkfTs="})

@@ -39,7 +39,7 @@ focus on db server terminal, ctrl+c
 
      5. begin script training
 
-node templateStage/makeTemplate.js webcontents purescripts templates
+node templateStage/makeTemplate.js
 
 ////////////////////////////////////// MATCHING
      1. start mongodb
@@ -67,7 +67,7 @@ focus on db server terminal, ctrl+c
 
      5. match (by script or by collection)
 
-node templateStage/ifMatch.js dbName collectionName [script ObjectID]
-node templateStage/ifMatch.js webcontents compareScripts
-node templateStage/ifMatch.js webcontents compareScripts 56f2eea51cd7e16f99b900ee
+node templateStage/ifMatch.js dbName collectionName domainName [script ObjectID]
+node templateStage/ifMatch.js webcontents compareScripts cnn
+node templateStage/ifMatch.js webcontents compareScripts cnn 56f2eea51cd7e16f99b900ee
 

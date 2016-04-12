@@ -1,11 +1,14 @@
 // Returns if script(s) match templates stored on the MongoDB database
-// call with "node ifMatch.js dbName collectionName [script ObjectID]"
-// many scripts example: "node ifMatch.js webcontents purescripts"
-// single script example: "node ifMatch.js webcontents purescripts 56f2eea51cd7e16f99b900ee
+
+// call with "node ifMatch.js dbName collectionName domainName [script ObjectID]"
+
+// many scripts example: "node ifMatch.js webcontents purescripts cnn"
+// single script example: "node ifMatch.js webcontents purescripts cnn 56f2eea51cd7e16f99b900ee
 // dbName is the name of the MongoDB database containing the script to query
 // collectionName is the collection containing the script(s)
 // scriptQuery is the optional argument to specify the script to query for 
 // 		uses MongoDB collection find() syntax
+// domainName is the domain that you want to match to
 
 // MongoDB
 var Db = require('mongodb').Db,
@@ -34,23 +37,26 @@ dat = {
 
 // Check call, get source and destination addresses
 numOfArgs = process.argv.length;
-if ((numOfArgs < 3) || (numOfArgs > 5)){
-	console.log("improper call. Call with:\nnode ifMatch.js dbName collectionName [scriptQuery]");
+if ((numOfArgs < 5) || (numOfArgs > 6)){
+	console.log("improper call. Call with:\nnode ifMatch.js dbName collectionName domainName [scriptQuery]");
 	return;
 }
 
 dbName = String(process.argv[2]);
 collName = String(process.argv[3]);
+domName = String(process.argv[4]);
 var scriptQuery; var ifSingle = false;
-if (numOfArgs == 5){
-	scriptQuery = {"_id": new ObjectID(String(process.argv[4]))};
+if (numOfArgs == 6){
 	ifSingle = true;
+	IDName = String(process.argv[5]);
 }
 
 // get scripts, flow continues at function "gotScripts"
 MongoClient.connect("mongodb://localhost:27017/" + dbName, {native_parser:true}, function(err, db) {
 	assert.equal(null, err);
+	//console.log("searching with domain regexp: " + ".*" + domName + ".*");
 	if (ifSingle){
+		scriptQuery = {"_id": new ObjectID(IDName)};
 		db.collection(collName).findOne(scriptQuery, function(err, item) {
 			assert.equal(null, err);
 			console.log("collection: " + collName);
@@ -74,7 +80,8 @@ MongoClient.connect("mongodb://localhost:27017/" + dbName, {native_parser:true},
 	}
 
 	function getTemplates(db){
-		var cursor = db.collection("templates").find();
+		var domQuery = {"domain": domName};
+		var cursor = db.collection("template_" + domName).find(domQuery);
 		cursor.each(function(err, doc) {
 			assert.equal(err, null);
 			if (doc != null) {
@@ -118,6 +125,7 @@ function gotScripts(){
 function processScripts(inArray){
 	if (inArray.length == 0){
 		console.log("error: nothing found in database at given db and collection");
+		//console.log("searched for: " + dbName + ", " + collName + ": with domain - " + domName);
 		process.exit();
 	}
 	outArray = [];

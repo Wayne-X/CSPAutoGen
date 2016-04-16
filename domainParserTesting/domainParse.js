@@ -1,5 +1,6 @@
 // node domainParserTesting/domainParse.js domainParserTesting/domains.txt
 var fs = require('fs');
+require('parse-domain');
 
 srcAddr = String(process.argv[2]);
 
@@ -21,5 +22,5 @@ function main(urlList){
 }
 
 function getDomain(url){
-	return url;
+	return parseDomain(url);
 }

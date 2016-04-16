@@ -24,6 +24,9 @@ var Db = require('mongodb').Db,
     assert = require('assert');
 // Esprima
 var esprima = require('esprima');
+// template tools
+var tools = require('templateTools.js');
+
 
 // global stuff in here
 dat = {

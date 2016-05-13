@@ -1,0 +1,3 @@
+The purpose of this test is to provide some metrics on how the number scripts to be matched affects script matching
+
+The provided 100 kb script can be matched 20x, 40x, 60x, 80x, 100x

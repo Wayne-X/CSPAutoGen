@@ -1,0 +1,7 @@
+The purpose of this test is to provide some metrics on training time and see how some factors affect that
+
+dimensions:
+number of scripts
+size of script
+
+We provide scripts of various sizes here. When testing, these scripts can be loaded x100, x200, x300 times at once.
